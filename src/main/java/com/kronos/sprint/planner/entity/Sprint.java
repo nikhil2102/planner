@@ -2,14 +2,20 @@ package com.kronos.sprint.planner.entity;
 
 import com.sun.istack.NotNull;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
+@Table(name = "Sprint",
+        uniqueConstraints =
+        @UniqueConstraint(columnNames = {"sprint_name", "team"}))
 public class Sprint {
 
     @Id
@@ -18,10 +24,11 @@ public class Sprint {
 
     @NotNull
     @NotBlank
+    @Column(name = "sprint_name")
     private String sprintName;
 
     @NotBlank
-    @Size (max = 20)
+    @Size(max = 20)
     private String team;
 
     @NotNull

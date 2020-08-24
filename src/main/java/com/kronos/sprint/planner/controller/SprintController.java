@@ -35,17 +35,17 @@ public class SprintController {
         return sprintService.getSprintsBySprintName(sprintName);
     }
 
-    @PostMapping("/save-sprint")
+    @PostMapping("/sprint")
     public List<Sprint> saveSprint(@Valid @RequestBody Sprint sprint) {
         return sprintService.saveSprint(sprint);
     }
 
-    @PutMapping("/update-sprint")
+    @PutMapping("/sprint")
     public List<Sprint> updateSprint(@RequestBody Sprint sprint) {
         return sprintService.updateSprint(sprint);
     }
 
-    @DeleteMapping("/delete/{sprintId}")
+    @DeleteMapping("/sprint/{sprintId}")
     public List<Sprint> deleteSprint(@PathVariable int sprintId) {
         return sprintService.deleteSprint(sprintId);
     }
