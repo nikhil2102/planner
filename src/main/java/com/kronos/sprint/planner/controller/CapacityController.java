@@ -1,19 +1,18 @@
 package com.kronos.sprint.planner.controller;
 
 import com.kronos.sprint.planner.entity.Resource;
-import com.kronos.sprint.planner.entity.Sprint;
 import com.kronos.sprint.planner.utility.CapacityUtility;
-import com.kronos.sprint.planner.utility.SprintUtility;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.ParseException;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 public class CapacityController {
 
 /*    @GetMapping("/capacity/{numberOfResources}")
