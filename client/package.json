@@ -1,0 +1,31 @@
+{
+    "name": "jira-search",
+    "version": "1.0.0",
+    "description": "jira-search",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "webpack-dev-server",
+        "build": "webpack"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.7.7",
+        "@babel/plugin-proposal-class-properties": "^7.10.4",
+        "@babel/preset-env": "^7.7.7",
+        "@babel/preset-react": "^7.7.4",
+        "babel-core": "^6.26.3",
+        "babel-loader": "^8.0.6",
+        "babel-plugin-transform-object-rest-spread": "^6.26.0",
+        "html-webpack-plugin": "^3.2.0",
+        "webpack": "^4.41.5",
+        "webpack-cli": "^3.3.12"
+    },
+    "dependencies": {
+        "axios": "^0.19.2",
+        "chart.js": "^2.9.3",
+        "react": "^16.12.0",
+        "react-chartjs-2": "^2.10.0",
+        "react-dom": "^16.12.0",
+        "webpack-dev-server": "^3.11.0"
+    }
+}
