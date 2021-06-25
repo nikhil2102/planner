@@ -22,6 +22,7 @@ import com.kronos.sprint.planner.entity.sprint.SprintDetail;
 import com.kronos.sprint.planner.entity.sprint.SprintResponse;
 import com.kronos.sprint.planner.entity.sprint.SprintSummary;
 import com.kronos.sprint.planner.entity.sprint.SprintsItem;
+import com.kronos.sprint.planner.entity.sprint.ValuesItem;
 import com.kronos.sprint.planner.proxy.ConfluenceServiceProxy;
 import com.kronos.sprint.planner.proxy.JiraServiceProxy;
 import com.kronos.sprint.planner.utility.PlannerUtility;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -78,6 +80,94 @@ public class JiraController {
 
         JiraResponse jiraTeamResourceDataJiraResponse = jiraServiceProxy.retrieveTeamResource(teamId);
         return jiraTeamResourceDataJiraResponse;
+    }
+
+    @GetMapping("/kronosteams/resources/sprint/{teamId}/{productiveHours}")
+    public @ResponseBody
+    ResourceData getTeamResourcesSprint(@PathVariable int teamId, @PathVariable int productiveHours) {
+
+        JiraSprintDetail jiraSprintDetail = new JiraSprintDetail();
+        JiraResponse jiraTeamResourceDataJiraResponse = jiraServiceProxy.retrieveTeamResource(teamId);
+        AllBoards allBoards = jiraServiceProxy.getAllBoards();
+        List<ViewsItem> relevantBoard = new ArrayList<>();
+
+        for (ViewsItem board : allBoards.getViews()) {
+            if (board.isSprintSupportEnabled() &&
+                    board.getName().contains("[PRIMARY]") &&
+                    (board.getFilter().getQuery().contains("Team =" + teamId) || board.getFilter().getQuery().contains("Team = " + teamId))) {
+                relevantBoard.add(board);
+                break;
+            }
+        }
+        if (!relevantBoard.isEmpty()) {
+            jiraSprintDetail = getBoardSprint(relevantBoard.get(0).getId());
+
+            for (ValuesItem valuesItem : jiraSprintDetail.getValues()) {
+                valuesItem.setStartDate(valuesItem.getStartDate().substring(0, 10));
+                valuesItem.setEndDate(valuesItem.getEndDate().substring(0, 10));
+            }
+        }
+
+        if (jiraSprintDetail != null && jiraSprintDetail.getValues() != null) {
+            int sprintId = jiraSprintDetail.getValues().get(0).getId();
+            CapacityResponse capacityResponse = jiraServiceProxy.retrieveAllIssues("Sprint=" + sprintId,
+                    0, 100, "labels,issuelinks,duedate,issuetype,summary,assignee," +
+                            "timetracking,parent,status");
+
+            Map<String, Integer> assigneeEffortsMap = new HashMap<>();
+            for (IssuesItem issuesItem : capacityResponse.getIssues()) {
+
+                String assignee = PlannerUtility.getAssigneeName(issuesItem);
+
+                String estimatedEffort = issuesItem.getFields().getTimetracking().getOriginalEstimate();
+                int concludedEffortHours = 0;
+
+                if (estimatedEffort != null) {
+                    StringTokenizer stringTokenizer = new StringTokenizer(estimatedEffort, " ");
+                    while (stringTokenizer.hasMoreTokens()) {
+                        String token = stringTokenizer.nextToken();
+                        char unit = token.charAt(token.length() -1);
+
+                        switch (unit) {
+                            case 'w':
+                                int effortInWeeks = Integer.parseInt(token.substring(0,token.length()-1));
+                                concludedEffortHours = concludedEffortHours + (effortInWeeks * GlobalConstant.JIRA_DAYS_IN_ONE_WEEK * productiveHours);
+                                break;
+                            case 'd':
+                                int effortInDays = Integer.parseInt(token.substring(0,token.length()-1));
+                                concludedEffortHours = concludedEffortHours + (effortInDays * productiveHours);
+                                break;
+                            case 'h':
+                                int effortInHours = Integer.parseInt(token.substring(0,token.length()-1));
+                                concludedEffortHours = concludedEffortHours + effortInHours;
+                                break;
+                            /*case 'm':
+                                int effortInMinutes = Integer.parseInt(token.substring(0,token.length()-1));
+                                concludedEffortHours = concludedEffortHours + (effortInMinutes / 60);
+                                break;*/
+                        }
+                    }
+                }
+//                int estimatedSeconds = issuesItem.getFields().getTimetracking().getOriginalEstimateSeconds();
+                if (assigneeEffortsMap.containsKey(assignee)) {
+//                    int updatedEstimatedSeconds = assigneeEffortsMap.get(assignee) + estimatedSeconds;
+                    int updatedEstimatedSeconds = assigneeEffortsMap.get(assignee) + concludedEffortHours;
+                    assigneeEffortsMap.put(assignee, updatedEstimatedSeconds);
+                } else {
+//                    assigneeEffortsMap.put(assignee, estimatedSeconds);
+                    assigneeEffortsMap.put(assignee, concludedEffortHours);
+                }
+            }
+            for (TeamMembersItem teamMembersItem : jiraTeamResourceDataJiraResponse.getTeamMembers()) {
+                if (assigneeEffortsMap.containsKey(teamMembersItem.getDisplayname())) {
+//                    teamMembersItem.setEstimatedEffortHours(TimeUnit.SECONDS.toHours(assigneeEffortsMap.get(teamMembersItem.getDisplayname())));
+                    teamMembersItem.setEstimatedEffortHours(assigneeEffortsMap.get(teamMembersItem.getDisplayname()));
+                }
+            }
+        }
+
+        ResourceData resourceData = new ResourceData(jiraTeamResourceDataJiraResponse, jiraSprintDetail);
+        return resourceData;
     }
 
     @GetMapping("/kronossprints")

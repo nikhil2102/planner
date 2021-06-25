@@ -16,16 +16,9 @@ import java.util.List;
 @CrossOrigin
 public class CapacityController {
 
-/*    @GetMapping("/capacity/{numberOfResources}")
-    public int calculateCapacity(@PathVariable int numberOfResources) {
-
-        int capacity = getTotalAvailableResourceHours(numberOfResources)
-                - getOfficialNonWorkingDays() - getPlannedResourceLeaves();
-        return capacity;
-    }*/
-
-    @PostMapping("/available-capacity")
-    public int availableSprintCapacity(@RequestBody List<Resource> resources) {
+    @PostMapping("/available-capacity/{sprintDays}/{productiveHours}")
+    public float availableSprintCapacity(@RequestBody List<Resource> resources, @PathVariable int sprintDays,
+                                         @PathVariable int productiveHours) {
 
         float capacity = CapacityUtility.calculateAvailableCapacity(resources, sprintDays, productiveHours);
         return capacity;
