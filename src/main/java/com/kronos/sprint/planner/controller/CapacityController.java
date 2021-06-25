@@ -1,6 +1,7 @@
 package com.kronos.sprint.planner.controller;
 
 import com.kronos.sprint.planner.entity.Resource;
+import com.kronos.sprint.planner.entity.SprintCapacity;
 import com.kronos.sprint.planner.utility.CapacityUtility;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,20 +27,23 @@ public class CapacityController {
     @PostMapping("/available-capacity")
     public int availableSprintCapacity(@RequestBody List<Resource> resources) {
 
-        int capacity = CapacityUtility.calculateAvailableCapacity(resources);
+        float capacity = CapacityUtility.calculateAvailableCapacity(resources, sprintDays, productiveHours);
         return capacity;
     }
 
-    @GetMapping("/max-capacity/{availableResources}")
-    public int maxSprintCapacity(@PathVariable int availableResources) {
+    @GetMapping("/max-capacity/{availableResources}/{sprintDays}/{productiveHours}")
+    public int maxSprintCapacity(@PathVariable int availableResources, @PathVariable int sprintDays,
+                                 @PathVariable int productiveHours) {
 
-        int maxCapacity = CapacityUtility.getMaxCapacity(availableResources);
+        int maxCapacity = CapacityUtility.getMaxCapacity(availableResources, sprintDays, productiveHours);
         return maxCapacity;
     }
 
-/*    @GetMapping("/sprint")
-    public Long sprintDays(@RequestBody Sprint sprint) throws ParseException {
+    @PostMapping("/currentvelocity")
+    public float getCurrentVelocity(@RequestBody List<SprintCapacity> sprintCapacityList) {
 
-        return SprintUtility.getTotalSprintDays(sprint);
-    }*/
+        float currentCapacity = CapacityUtility.calculateCurrentVelocity(sprintCapacityList);
+        return currentCapacity;
+    }
+
 }

@@ -6,6 +6,7 @@ public class SprintDetail{
 	private Contents contents;
 	private Sprint sprint;
 	private String lastUserToClose;
+	private SprintCapacity sprintCapacity;
 
 	public String getUserWhoStarted(){
 		return userWhoStarted;
@@ -25,5 +26,13 @@ public class SprintDetail{
 
 	public String getLastUserToClose(){
 		return lastUserToClose;
+	}
+
+	public SprintCapacity getSprintCapacity() {
+		return sprintCapacity;
+	}
+
+	public void setSprintCapacity(SprintCapacity sprintCapacity) {
+		this.sprintCapacity = sprintCapacity;
 	}
 }
