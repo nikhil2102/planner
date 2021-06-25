@@ -2,6 +2,8 @@ package com.kronos.sprint.planner.proxy;
 
 import com.kronos.sprint.planner.configuration.FeignClientConfiguration;
 import com.kronos.sprint.planner.entity.confluence.ConfluenceData;
+import com.kronos.sprint.planner.entity.confluence.space.SpaceData;
+import com.kronos.sprint.planner.entity.confluence.subcalendar.SubCalendarResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,4 +19,11 @@ public interface ConfluenceServiceProxy {
     ConfluenceData retrieveConfluenceData(@RequestParam("subCalendarId") String subCalendarId,
                                           @RequestParam("userTimeZoneId") String userTimeZoneId,
                                           @RequestParam("start") String start, @RequestParam("end") String end);
+
+    @GetMapping("/rest/calendar-services/1.0/calendar/subcalendars.json?calendarContext=spaceCalendars")
+    SubCalendarResponse retreiveSubCalendarData(@RequestParam("viewingSpaceKey") String viewingSpaceKey);
+
+    @GetMapping(value = "/rest/spacedirectory/1/search?query=&status=current", produces = "application/json")
+    SpaceData retrieveSpaceData(@RequestParam("pageSize") int pageSize,
+                                @RequestParam("startIndex") int startIndex);
 }

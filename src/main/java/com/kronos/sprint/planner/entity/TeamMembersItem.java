@@ -12,6 +12,7 @@ public class TeamMembersItem{
 	private String key;
 	private List<MembershipsItem> memberships;
 	private int workloadSchemeId;
+	private long estimatedEffortHours;
 
 	public int getHolidaySchemeId(){
 		return holidaySchemeId;
@@ -47,5 +48,13 @@ public class TeamMembersItem{
 
 	public int getWorkloadSchemeId(){
 		return workloadSchemeId;
+	}
+
+	public long getEstimatedEffortHours() {
+		return estimatedEffortHours;
+	}
+
+	public void setEstimatedEffortHours(long estimatedEffortHours) {
+		this.estimatedEffortHours = estimatedEffortHours;
 	}
 }

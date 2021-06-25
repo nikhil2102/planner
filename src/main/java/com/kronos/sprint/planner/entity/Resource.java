@@ -4,10 +4,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Table(name = "Resource",
@@ -26,6 +28,10 @@ public class Resource {
     private int absentDays;
     @NotBlank
     private String team;
+    @NotBlank
+    private int availability;
+    @OneToMany(mappedBy = "resource")
+    private List<ResourceIssue> issuesList;
 
     public Resource() {
     }
@@ -35,6 +41,11 @@ public class Resource {
         this.type = type;
         this.absentDays = absentDays;
         this.team = team;
+    }
+
+    public Resource(String name, List<ResourceIssue> issuesList) {
+        this.name = name;
+        this.issuesList = issuesList;
     }
 
     public int getResourceId() {
@@ -77,6 +88,22 @@ public class Resource {
         this.team = team;
     }
 
+    public int getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(int availability) {
+        this.availability = availability;
+    }
+
+    public List<ResourceIssue> getIssuesList() {
+        return issuesList;
+    }
+
+    public void setIssuesList(List<ResourceIssue> issuesList) {
+        this.issuesList = issuesList;
+    }
+
     @Override
     public String toString() {
         return "Resource{" +
@@ -84,7 +111,9 @@ public class Resource {
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", absentDays=" + absentDays +
-                ", team=" + team +
+                ", team='" + team + '\'' +
+                ", availability=" + availability +
+                ", issuesList=" + issuesList +
                 '}';
     }
 }
